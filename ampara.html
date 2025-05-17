@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Ampara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        #chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-messages::-webkit-scrollbar-track {
+            background: #f3e8ff;
+            border-radius: 10px;
+        }
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #d8b4fe;
+            border-radius: 10px;
+        }
+        #chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #c084fc;
+        }
+
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .attach-button-container {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+        .send-button-container {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #user-input {
+            padding-left: 3.0rem;
+            padding-right: 3.5rem;
+        }
+        .chat-bg-pattern {
+            background-color: #faf5ff;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-br from-purple-100 via-pink-50 to-purple-200">
+
+    <div class="bg-white shadow-xl rounded-lg w-full max-w-lg flex flex-col" style="height: 80vh; max-height: 700px;">
+        <header class="bg-purple-500 text-white p-4 rounded-t-lg flex items-center justify-between">
+            <div class="flex items-center">
+                <img src="https://placehold.co/40x40/FFFFFF/A78BFA?text=A&font=inter" alt="Ícone Ampara" class="w-10 h-10 rounded-full mr-3">
+                <div>
+                    <h1 class="text-xl font-semibold">Ampara</h1>
+                    <p class="text-xs opacity-75">Sua assistente virtual de apoio</p>
+                </div>
+            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-200" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 2a1.5 1.5 0 00-3.062.194L6.07 4.73c-.488.362-.91.784-1.273 1.273L2.194 6.938A1.5 1.5 0 002 10c0 .04.002.078.005.117l.19 1.898c.113.08.23.156.35.228l1.58 1.58A5.04 5.04 0 014.73 13.93l-2.536.868A1.5 1.5 0 004 18h12a1.5 1.5 0 001.73-1.73l-.868-2.535a5.04 5.04 0 01.607-.607l1.58-1.58c.12-.072.237-.148.35-.228l.19-1.898A1.5 1.5 0 0018 10a1.5 1.5 0 00-.194-3.062l-2.603-.868a5.04 5.04 0 01-1.273-1.273l-.868-2.603A1.5 1.5 0 0010 2zm0 3a.5.5 0 01.5.5v1.665a.5.5 0 01-.223.42l-1.81 1.206a.5.5 0 01-.555 0L6.223 7.585A.5.5 0 016 7.165V5.5a.5.5 0 01.5-.5h3zM5.5 8a.5.5 0 00-.5.5v3a.5.5 0 00.5.5h1.665a.5.5 0 00.42-.223l1.206-1.81a.5.5 0 000-.555L7.585 8.223A.5.5 0 007.165 8H5.5zm9 0a.5.5 0 00-.5.5v3a.5.5 0 00.5.5h1.665a.5.5 0 00.42-.223l1.206-1.81a.5.5 0 000-.555L14.585 8.223A.5.5 0 0014.165 8h-1.665z"/>
+            </svg>
+        </header>
+
+        <main id="chat-messages" class="flex-1 p-6 space-y-4 overflow-y-auto chat-bg-pattern">
+            <div class="flex justify-start">
+                <div class="bg-purple-100 text-purple-800 p-3 rounded-lg max-w-xs shadow">
+                    <p>Olá, seja bem vinda! Sou a Ampara, seu assistente virtual. Do que precisa hoje?</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-white p-4 border-t border-gray-200 rounded-b-lg">
+            <div class="input-container">
+                <div class="attach-button-container">
+                    <button id="attach-file-button" class="text-purple-500 hover:text-purple-600 p-2 rounded-full transition duration-150 focus:outline-none" aria-label="Anexar ficheiro">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243L15.75 8.5a1.5 1.5 0 012.122 2.121l-6.811 6.811a4.502 4.502 0 01-6.364-6.364l7-7a4.5 4.5 0 016.364 6.364L10.5 17.03a.75.75 0 01-1.06-1.06l5.25-5.25a3 3 0 00-4.242-4.242l-7 7a1.5 1.5 0 002.121 2.122l6.188-6.189a.75.75 0 111.061 1.06l-6.188 6.189a3.001 3.001 0 01-4.242 0 3.001 3.001 0 010-4.242l7-7z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf,.doc,.docx,.txt">
+                <input type="text" id="user-input" placeholder="Digite sua mensagem..." class="flex-1 p-3 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition duration-150">
+                <div class="send-button-container">
+                    <button id="send-button" class="bg-purple-500 hover:bg-purple-600 text-white p-2 rounded-full transition duration-150 focus:outline-none focus:ring-2 focus:ring-purple-400" aria-label="Enviar mensagem">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path d="M3.105 3.105a1.5 1.5 0 012.122-.001L19.43 15.07a1.514 1.514 0 010 2.142L17.208 19.43a1.5 1.5 0 01-2.122.001L1.657 6.93a1.514 1.514 0 010-2.142L3.105 3.105z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const attachFileButton = document.getElementById('attach-file-button');
+        const fileInput = document.getElementById('file-input');
+
+        function addMessage(message, sender, isFile = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('flex', 'my-1');
+
+            let contentWrapper = document.createElement('div');
+            contentWrapper.classList.add('rounded-lg', 'p-3', 'max-w-xs', 'shadow-md');
+
+            let content = `<p>${message}</p>`;
+            if (isFile && sender === 'user') {
+                content = `<p class="flex items-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-2 flex-shrink-0"><path fill-rule="evenodd" d="M15.621 4.379a3 3 0 00-4.242 0l-7 7a3 3 0 004.241 4.243L15.75 8.5a1.5 1.5 0 012.122 2.121l-6.811 6.811a4.502 4.502 0 01-6.364-6.364l7-7a4.5 4.5 0 016.364 6.364L10.5 17.03a.75.75 0 01-1.06-1.06l5.25-5.25a3 3 0 00-4.242-4.242l-7 7a1.5 1.5 0 002.121 2.122l6.188-6.189a.75.75 0 111.061 1.06l-6.188 6.189a3.001 3.001 0 01-4.242 0 3.001 3.001 0 010-4.242l7-7z" clip-rule="evenodd" /></svg> <span class="truncate" title="${message}">Você anexou: ${message}</span></p>`;
+            }
+
+            contentWrapper.innerHTML = content;
+
+            if (sender === 'user') {
+                messageDiv.classList.add('justify-end');
+                contentWrapper.classList.add('bg-purple-500', 'text-white');
+                messageDiv.appendChild(contentWrapper);
+            } else { 
+                messageDiv.classList.add('justify-start');
+                contentWrapper.classList.add('bg-purple-100', 'text-purple-800');
+                messageDiv.appendChild(contentWrapper);
+            }
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getAmparaResponse(userMessage, isFileAttached = false) {
+            let amparaMessage = "Obrigada por compartilhar. Como posso te ajudar mais?";
+            const lowerUserMessage = userMessage.toLowerCase();
+
+            if (isFileAttached) {
+                amparaMessage = `Recebi a indicação do ficheiro "${userMessage}". No momento, não consigo visualizar o conteúdo de ficheiros, mas em uma futura versão poderei analisar! O que mais posso fazer por você?`;
+            } else if (lowerUserMessage.includes("tempo") || lowerUserMessage.includes("clima")) {
+                amparaMessage = "Claro, posso verificar a previsão do tempo para São Paulo para você. Um momento...";
+                setTimeout(() => {
+                    const weatherInfo = "Simulação: Agora em São Paulo: 22°C, Céu limpo. Hoje, a temperatura mínima prevista é de 18°C e a máxima de 25°C.";
+                    addMessage(weatherInfo, 'ampara');
+                }, 1500);
+                return; 
+            } else if (lowerUserMessage.includes("emprego") || lowerUserMessage.includes("vaga")) {
+                amparaMessage = "Entendo sua busca por autonomia. Você pode procurar vagas em sites como LinkedIn, Catho, Vagas.com.br. Em São Paulo, o Cate também pode ajudar. Lembre-se de preparar um bom currículo!";
+            } else if (lowerUserMessage.includes("quiz") || lowerUserMessage.includes("relacionamento abusivo")) {
+                amparaMessage = "Entendo. Se você se sentir confortável, posso te fazer algumas perguntas para te ajudar a refletir sobre sua situação. Não precisa me dar as respostas, elas são para sua própria reflexão. Gostaria de seguir?";
+            } else if (lowerUserMessage.includes("cólica") || lowerUserMessage.includes("colica") || lowerUserMessage.includes("cólicas") || lowerUserMessage.includes("colicas") || lowerUserMessage.includes("tpm") || lowerUserMessage.includes("ciclo menstrual") || lowerUserMessage.includes("menstruação") || lowerUserMessage.includes("menstruada")) {
+                if (lowerUserMessage.includes("cólica") || lowerUserMessage.includes("colica") || lowerUserMessage.includes("cólicas") || lowerUserMessage.includes("colicas")) {
+                    amparaMessage = "Sinto muito que você esteja com cólicas, sei como pode ser desconfortável. Algumas coisas que podem ajudar são repouso e aplicar uma bolsa de água morna na região abdominal. Manter-se hidratada e uma alimentação leve também podem contribuir para o alívio. Existem analgésicos de venda livre, como os à base de ibuprofeno ou paracetamol, que costumam ser usados para cólicas. No entanto, é muito importante não se automedicar com frequência. Se a dor for muito forte, persistente, diferente do habitual ou acompanhada de outros sintomas, é fundamental conversar com um médico ginecologista para uma avaliação e orientação personalizada, está bem? Eles poderão indicar o melhor tratamento para você. Cuide-se!";
+                } else if (lowerUserMessage.includes("tpm")) {
+                    amparaMessage = "Ah, a TPM... sei que pode ser um período desafiador para muitas mulheres, com variações de humor, sensibilidade e outros desconfortos. É importante lembrar que você não está sozinha nisso. Algumas dicas que podem ajudar a aliviar os sintomas da TPM incluem manter uma alimentação equilibrada, rica em frutas, verduras e grãos integrais, e evitar excesso de sal, açúcar e cafeína. Praticar atividades físicas leves, como uma caminhada, e ter boas noites de sono também fazem diferença. Se os sintomas da TPM estiverem atrapalhando muito sua qualidade de vida, conversar com um ginecologista pode te ajudar a encontrar estratégias específicas para o seu caso. Lembre-se de ser gentil consigo mesma nesse período.";
+                } else { 
+                    amparaMessage = "Entendo que você tem dúvidas sobre o ciclo menstrual. É um processo natural e importante do corpo feminino. Se você tiver perguntas sobre como ele funciona, regularidade, ou qualquer outra questão, posso tentar te oferecer informações gerais. Mas lembre-se, para questões muito específicas sobre sua saúde, sintomas incomuns ou preocupações, o ideal é sempre consultar um ginecologista. Eles são os profissionais mais indicados para te orientar corretamente.";
+                }
+            } else if (lowerUserMessage.includes("obrigada") || lowerUserMessage.includes("obrigado")) {
+                amparaMessage = "De nada! Estou aqui para ajudar. 😊";
+            } else if (lowerUserMessage.includes("oi") || lowerUserMessage.includes("olá") || lowerUserMessage.includes("bom dia") || lowerUserMessage.includes("boa tarde") || lowerUserMessage.includes("boa noite")) {
+                 amparaMessage = "Olá! Como posso te ajudar hoje?";
+            }
+            
+            setTimeout(() => {
+                addMessage(amparaMessage, 'ampara');
+            }, 1000);
+        }
+
+        attachFileButton.addEventListener('click', () => {
+            fileInput.click(); 
+        });
+
+        fileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                addMessage(file.name, 'user', true);
+                getAmparaResponse(file.name, true);
+                fileInput.value = '';
+            }
+        });
+
+        sendButton.addEventListener('click', () => {
+            const messageText = userInput.value.trim();
+            if (messageText) {
+                addMessage(messageText, 'user');
+                userInput.value = ''; 
+                getAmparaResponse(messageText); 
+            }
+        });
+
+        userInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendButton.click(); 
+            }
+        });
+    </script>
+</body>
+</html>
+
